@@ -13,6 +13,7 @@ namespace LineCon.Models
             : base(options)
         { }
 
-        public DbSet<Attendee> Attendees { get; set;  }
+        public DbSet<Attendee> Attendees { get; set; }
+        public DbSet<TicketWindow> TicketWindows { get; set; }
     }
 }
