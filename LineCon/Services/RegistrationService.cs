@@ -15,6 +15,11 @@ namespace LineCon.Services
             _context = context;
         }
 
+        /// <summary>
+        /// Creates a new Attendee
+        /// </summary>
+        /// <param name="newAttendee"></param>
+        /// <returns></returns>
         public async Task Register(NewAttendee newAttendee)
         {
             //I'd like this to be SingleOrDefault, as we should ideally never have more than one,

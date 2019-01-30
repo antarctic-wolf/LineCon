@@ -14,6 +14,10 @@ namespace LineCon.Services
             _context = context;
         }
 
+        /// <summary>
+        /// Gets the next available TicketWindow
+        /// </summary>
+        /// <returns></returns>
         public TicketWindow GetNextAvailable()
         {
             return _context.TicketWindows.Where(t => t.StartTime > DateTime.Now)
@@ -21,6 +25,10 @@ namespace LineCon.Services
                 .FirstOrDefault(t => t.AttendeeTickets.Count(x => !x.Completed) < t.AttendeeCapacity);
         }
 
+        /// <summary>
+        /// Creates a new TicketWindow
+        /// </summary>
+        /// <returns></returns>
         public async Task<TicketWindow> Create()
         {
             throw new NotImplementedException(); //TODO

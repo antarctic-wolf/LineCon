@@ -16,11 +16,17 @@ namespace LineCon.Services
             _ticketWindowService = ticketWindowService;
         }
 
-        public async Task<TicketWindow> Enqueue(Attendee attendee)
+        /// <summary>
+        /// Adds an Attendee to the ticket queue in the next available window
+        /// </summary>
+        /// <param name="attendee"></param>
+        /// <returns></returns>
+        public async Task<TicketWindow> Enqueue(Attendee attendee, TicketWindow ticketWindow = null)
         {
+            //TODO: handle given ticketWindow
             //TODO: handle case where attendee is already queued
 
-            var ticketWindow = _ticketWindowService.GetNextAvailable();
+            ticketWindow = _ticketWindowService.GetNextAvailable();
             if (ticketWindow == null)
             {
                 ticketWindow = await _ticketWindowService.Create();
@@ -41,6 +47,11 @@ namespace LineCon.Services
             return ticketWindow;
         }
 
+        /// <summary>
+        /// Removes an Attendee from the ticket queue by marking their ticket as complete
+        /// </summary>
+        /// <param name="attendee"></param>
+        /// <returns></returns>
         public async Task Dequeue(Attendee attendee)
         {
             var attendeeTicket = _context.AttendeeTickets.SingleOrDefault(t => t.Attendee.AttendeeId == attendee.AttendeeId);

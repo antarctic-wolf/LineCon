@@ -51,6 +51,13 @@ namespace LineCon.Controllers
         }
 
         [HttpPut]
+        public async Task<IActionResult> Requeue(Guid attendeeId)
+        {
+            //TODO: jump to back of line
+            throw new NotImplementedException();
+        }
+
+        [HttpPut]
         public async Task<IActionResult> Dequeue(Guid attendeeId)
         {
             var attendee = _context.Attendees.SingleOrDefault(a => a.AttendeeId == attendeeId);
@@ -70,6 +77,11 @@ namespace LineCon.Controllers
             });
         }
         
-        //TODO: jump to back of line
+        [HttpGet]
+        public async Task<IActionResult> GetAvailableWindows()
+        {
+            //TODO: request available windows
+            throw new NotImplementedException();
+        }
     }
 }
