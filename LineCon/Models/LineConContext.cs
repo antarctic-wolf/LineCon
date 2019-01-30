@@ -10,5 +10,6 @@ namespace LineCon.Models
 
         public DbSet<Attendee> Attendees { get; set; }
         public DbSet<TicketWindow> TicketWindows { get; set; }
+        public DbSet<AttendeeTicket> AttendeeTickets { get; set; }
     }
 }

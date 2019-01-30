@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LineCon.Models
 {
@@ -9,11 +8,10 @@ namespace LineCon.Models
         [Key]
         public Guid AttendeeId { get; set; }
 
+        [Required]
         public string ConfirmationNumber { get; set; }
-        public string BadgeName { get; set; }
 
-        [ForeignKey("TicketWindow")]
-        public Guid TicketWindowId { get; set; }
-        public TicketWindow TicketWindow { get; set; }
+        [Required]
+        public string BadgeName { get; set; }
     }
 }

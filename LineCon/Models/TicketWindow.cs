@@ -12,6 +12,7 @@ namespace LineCon.Models
         public DateTime StartTime { get; set; }
         public TimeSpan Length { get; set; }
 
-        public List<Attendee> Attendees { get; set; }
+        public List<AttendeeTicket> AttendeeTickets { get; set; }
+        public int AttendeeCapacity { get; set; }
     }
 }
