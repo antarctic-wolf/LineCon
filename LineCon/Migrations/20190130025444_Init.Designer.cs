@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LineCon.Migrations
 {
     [DbContext(typeof(LineConContext))]
-    [Migration("20181203003226_TicketWindow_dbset")]
-    partial class TicketWindow_dbset
+    [Migration("20190130025444_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,15 +23,14 @@ namespace LineCon.Migrations
 
             modelBuilder.Entity("LineCon.Models.Attendee", b =>
                 {
-                    b.Property<int>("AttendeeId")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<Guid>("AttendeeId")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("BadgeName");
 
                     b.Property<string>("ConfirmationNumber");
 
-                    b.Property<int?>("TicketWindowId");
+                    b.Property<Guid>("TicketWindowId");
 
                     b.HasKey("AttendeeId");
 
@@ -42,11 +41,12 @@ namespace LineCon.Migrations
 
             modelBuilder.Entity("LineCon.Models.TicketWindow", b =>
                 {
-                    b.Property<int>("TicketWindowId")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<Guid>("TicketWindowId")
+                        .ValueGeneratedOnAdd();
 
-                    b.Property<TimeSpan>("Time");
+                    b.Property<TimeSpan>("Length");
+
+                    b.Property<DateTime>("StartTime");
 
                     b.HasKey("TicketWindowId");
 
@@ -56,8 +56,9 @@ namespace LineCon.Migrations
             modelBuilder.Entity("LineCon.Models.Attendee", b =>
                 {
                     b.HasOne("LineCon.Models.TicketWindow", "TicketWindow")
-                        .WithMany()
-                        .HasForeignKey("TicketWindowId");
+                        .WithMany("Attendees")
+                        .HasForeignKey("TicketWindowId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }

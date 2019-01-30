@@ -1,12 +1,19 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LineCon.Models
 {
     public class Attendee
     {
-        public int AttendeeId { get; set; }
-        public String ConfirmationNumber { get; set; }
-        public String BadgeName { get; set; }
+        [Key]
+        public Guid AttendeeId { get; set; }
+
+        public string ConfirmationNumber { get; set; }
+        public string BadgeName { get; set; }
+
+        [ForeignKey("TicketWindow")]
+        public Guid TicketWindowId { get; set; }
         public TicketWindow TicketWindow { get; set; }
     }
 }

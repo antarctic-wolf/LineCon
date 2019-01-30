@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 
 namespace LineCon.Models
 {
     public class TicketWindow
     {
-        public int TicketWindowId { get; set; }
-        public TimeSpan Time { get; set; }
+        [Key]
+        public Guid TicketWindowId { get; set; }
+
+        public DateTime StartTime { get; set; }
+        public TimeSpan Length { get; set; }
+
+        public List<Attendee> Attendees { get; set; }
     }
 }
