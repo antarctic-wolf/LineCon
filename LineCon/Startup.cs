@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LineCon.Models;
+using LineCon.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -35,6 +36,10 @@ namespace LineCon
 
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            services.AddScoped<IRegistrationService, RegistrationService>();
+            services.AddScoped<ITicketQueueService, TicketQueueService>();
+            services.AddScoped<ITicketQueueService, TicketQueueService>();
 
             var connectionString = @"Server=localhost\SQLEXPRESS;Database=master;Trusted_Connection=True;";
             services.AddDbContext<LineConContext>(options => options.UseSqlServer(connectionString));
