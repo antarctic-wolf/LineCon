@@ -1,22 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace LineCon.Models
 {
-    public class Attendee
+    public class ConfirmationNumber
     {
         [Key]
-        public Guid AttendeeId { get; set; }
+        public Guid ConConfigId { get; set; }
 
         [ForeignKey("Convention")]
         public Guid ConventionId { get; set; }
         public virtual Convention Convention { get; set; }
 
-        [Required]
-        public string ConfirmationNumber { get; set; }
-
-        [Required]
-        public string BadgeName { get; set; }
+        public string Number { get; set; }
     }
 }

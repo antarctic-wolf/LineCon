@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 
 namespace LineCon.Models
@@ -9,6 +10,10 @@ namespace LineCon.Models
     {
         [Key]
         public Guid TicketWindowId { get; set; }
+
+        [ForeignKey("Convention")]
+        public Guid ConventionId { get; set; }
+        public virtual Convention Convention { get; set; }
 
         public DateTime StartTime { get; set; }
         public TimeSpan Length { get; set; }

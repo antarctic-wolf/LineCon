@@ -13,10 +13,14 @@ namespace LineCon.Models
 
         [ForeignKey("Attendee")]
         public Guid AttendeeId { get; set; }
-        public Attendee Attendee { get; set; }
+        public virtual Attendee Attendee { get; set; }
 
         [ForeignKey("TicketWindow")]
         public Guid TicketWindowId { get; set; }
-        public TicketWindow TicketWindow { get; set; }
+        public virtual TicketWindow TicketWindow { get; set; }
+
+        [ForeignKey("Convention")]
+        public Guid ConventionId { get; set; }
+        public virtual Convention Convention { get; set; }
     }
 }

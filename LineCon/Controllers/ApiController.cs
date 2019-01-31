@@ -31,6 +31,18 @@ namespace LineCon.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(NewAttendee attendee)
         {
+            var convention = _context.Conventions.SingleOrDefault(c => c.ConventionId == attendee.ConventionId);
+            if (convention == null)
+            {
+                return StatusCode(500, $"No convention found with this id: {attendee.ConventionId}");
+            }
+
+            if (convention.ConConfig.RequireConfirmationNumber
+                && !convention.ConfirmationNumbers.Any(n => n.Number == attendee.ConfirmationNumber))
+            {
+                return Forbid($"No registration found with this confirmation number: {attendee.ConfirmationNumber}");
+            }
+
             try
             {
                 await _registrationService.Register(attendee);
@@ -45,7 +57,7 @@ namespace LineCon.Controllers
         [HttpPost]
         public async Task<IActionResult> Enqueue(Guid attendeeId)
         {
-            var attendee = GetAttendee(attendeeId);
+            var (attendee, conConfig) = GetAttendee(attendeeId);
             var window = await _ticketQueueService.Enqueue(attendee);
             return Ok(new
             {
@@ -57,7 +69,7 @@ namespace LineCon.Controllers
         [HttpPost]
         public async Task<IActionResult> Enqueue(Guid attendeeId, Guid ticketWindowId)
         {
-            var attendee = GetAttendee(attendeeId);
+            var (attendee, conConfig) = GetAttendee(attendeeId);
             var ticketWindow = _context.TicketWindows.SingleOrDefault(w => w.TicketWindowId == ticketWindowId);
             await _ticketQueueService.Enqueue(attendee, ticketWindow); //TODO: do we want to catch the TicketWindowFullException?
             return Ok();
@@ -66,7 +78,7 @@ namespace LineCon.Controllers
         [HttpPut]
         public async Task<IActionResult> Dequeue(Guid attendeeId)
         {
-            var attendee = GetAttendee(attendeeId);
+            var (attendee, conConfig) = GetAttendee(attendeeId);
             await _ticketQueueService.Dequeue(attendee);
             return Ok();
         }
@@ -94,9 +106,11 @@ namespace LineCon.Controllers
             return Ok(windows);
         }
 
-        private Attendee GetAttendee(Guid attendeeId)
+        private (Attendee, ConConfig) GetAttendee(Guid attendeeId)
         {
-            return _context.Attendees.SingleOrDefault(a => a.AttendeeId == attendeeId);
+            var attendee = _context.Attendees.SingleOrDefault(a => a.AttendeeId == attendeeId);
+            var conConfig = _context.Conventions.SingleOrDefault(c => c.ConConfigId == attendee.ConventionId).ConConfig;
+            return (attendee, conConfig);
         }
     }
 }
