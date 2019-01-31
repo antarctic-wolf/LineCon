@@ -71,8 +71,15 @@ namespace LineCon.Controllers
         {
             var (attendee, conConfig) = GetAttendee(attendeeId);
             var ticketWindow = _context.TicketWindows.SingleOrDefault(w => w.TicketWindowId == ticketWindowId);
-            await _ticketQueueService.Enqueue(conConfig, attendee, ticketWindow); //TODO: do we want to catch the TicketWindowFullException?
-            return Ok();
+            try
+            {
+                await _ticketQueueService.Enqueue(conConfig, attendee, ticketWindow);
+                return Ok();
+            }
+            catch (TicketWindowFullException e)
+            {
+                return Forbid(e.Message);
+            }
         }
 
         [HttpPut]
