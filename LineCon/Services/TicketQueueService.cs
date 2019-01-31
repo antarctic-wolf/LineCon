@@ -22,12 +22,12 @@ namespace LineCon.Services
         /// </summary>
         /// <param name="attendee"></param>
         /// <returns></returns>
-        public async Task<TicketWindow> Enqueue(Attendee attendee, TicketWindow ticketWindow = null)
+        public async Task<TicketWindow> Enqueue(ConConfig conConfig, Attendee attendee, TicketWindow ticketWindow = null)
         {
             //get the ticket for this attendee if one isn't specified
             if (ticketWindow == null)
             {
-                ticketWindow = await _ticketWindowService.GetNextAvailable();
+                ticketWindow = await _ticketWindowService.GetNextAvailable(conConfig);
             }
 
             //ensure the ticket isn't full

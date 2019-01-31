@@ -58,7 +58,7 @@ namespace LineCon.Controllers
         public async Task<IActionResult> Enqueue(Guid attendeeId)
         {
             var (attendee, conConfig) = GetAttendee(attendeeId);
-            var window = await _ticketQueueService.Enqueue(attendee);
+            var window = await _ticketQueueService.Enqueue(conConfig, attendee);
             return Ok(new
             {
                 window.StartTime,
@@ -71,7 +71,7 @@ namespace LineCon.Controllers
         {
             var (attendee, conConfig) = GetAttendee(attendeeId);
             var ticketWindow = _context.TicketWindows.SingleOrDefault(w => w.TicketWindowId == ticketWindowId);
-            await _ticketQueueService.Enqueue(attendee, ticketWindow); //TODO: do we want to catch the TicketWindowFullException?
+            await _ticketQueueService.Enqueue(conConfig, attendee, ticketWindow); //TODO: do we want to catch the TicketWindowFullException?
             return Ok();
         }
 

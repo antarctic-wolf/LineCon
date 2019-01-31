@@ -7,7 +7,7 @@ namespace LineCon.Services
     public interface ITicketWindowService
     {
         IEnumerable<TicketWindow> GetAllAvailable();
-        Task<TicketWindow> GetNextAvailable();
-        Task<TicketWindow> Create();
+        Task<TicketWindow> GetNextAvailable(ConConfig conConfig);
+        Task<TicketWindow> Create(ConConfig conConfig);
     }
 }

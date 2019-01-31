@@ -29,14 +29,14 @@ namespace LineCon.Services
         /// Gets the next available TicketWindow
         /// </summary>
         /// <returns></returns>
-        public async Task<TicketWindow> GetNextAvailable()
+        public async Task<TicketWindow> GetNextAvailable(ConConfig conConfig)
         {
             var window = GetAllAvailable()
                 .OrderBy(t => t.StartTime)
                 .FirstOrDefault();
             if (window == null)
             {
-                window = await Create();
+                window = await Create(conConfig);
             }
             return window;
         }
@@ -45,7 +45,7 @@ namespace LineCon.Services
         /// Creates a new TicketWindow
         /// </summary>
         /// <returns></returns>
-        public async Task<TicketWindow> Create()
+        public async Task<TicketWindow> Create(ConConfig conConfig)
         {
             throw new NotImplementedException(); //TODO
         }
