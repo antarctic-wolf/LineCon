@@ -1,4 +1,5 @@
 ﻿using LineCon.Data;
+using LineCon.Data.Exceptions;
 using LineCon.Models;
 using System;
 using System.Linq;
@@ -22,12 +23,9 @@ namespace LineCon.Services
         /// <returns></returns>
         public async Task Register(NewAttendee newAttendee)
         {
-            //I'd like this to be SingleOrDefault, as we should ideally never have more than one,
-            //  but it's not a Guid and it's technically possible that there would be multiple.
-            var existingAttendee = _context.Attendees.FirstOrDefault(a => a.ConfirmationNumber == newAttendee.ConfirmationNumber);
-            if (existingAttendee != null)
+            if (_context.Attendees.Any(a => a.ConfirmationNumber == newAttendee.ConfirmationNumber))
             {
-                throw new AttendeeExistsException(existingAttendee);
+                throw new AttendeeExistsException(newAttendee.ConfirmationNumber);
             }
 
             _context.Attendees.Add(new Attendee()

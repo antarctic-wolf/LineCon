@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LineCon.Models;
@@ -15,14 +16,29 @@ namespace LineCon.Services
         }
 
         /// <summary>
+        /// Gets all available TicketWindows
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<TicketWindow> GetAllAvailable()
+        {
+            return _context.TicketWindows.Where(t => t.Available
+                && t.StartTime > DateTime.Now); //TODO should this go by end time instead?
+        }
+
+        /// <summary>
         /// Gets the next available TicketWindow
         /// </summary>
         /// <returns></returns>
-        public TicketWindow GetNextAvailable()
+        public async Task<TicketWindow> GetNextAvailable()
         {
-            return _context.TicketWindows.Where(t => t.StartTime > DateTime.Now)
+            var window = GetAllAvailable()
                 .OrderBy(t => t.StartTime)
-                .FirstOrDefault(t => t.AttendeeTickets.Count(x => !x.Completed) < t.AttendeeCapacity);
+                .FirstOrDefault();
+            if (window == null)
+            {
+                window = await Create();
+            }
+            return window;
         }
 
         /// <summary>

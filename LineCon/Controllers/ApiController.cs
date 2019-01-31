@@ -1,4 +1,5 @@
 ﻿using LineCon.Data;
+using LineCon.Data.Exceptions;
 using LineCon.Models;
 using LineCon.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -13,15 +14,18 @@ namespace LineCon.Controllers
         private readonly LineConContext _context;
         private readonly IRegistrationService _registrationService;
         private readonly ITicketQueueService _ticketQueueService;
+        private readonly ITicketWindowService _ticketWindowService;
 
         public ApiController(
             LineConContext context,
             IRegistrationService registrationService,
-            ITicketQueueService ticketQueueService)
+            ITicketQueueService ticketQueueService,
+            ITicketWindowService ticketWindowService)
         {
             _context = context;
             _registrationService = registrationService;
             _ticketQueueService = ticketQueueService;
+            _ticketWindowService = ticketWindowService;
         }
 
         [HttpPost]
@@ -41,7 +45,7 @@ namespace LineCon.Controllers
         [HttpPost]
         public async Task<IActionResult> Enqueue(Guid attendeeId)
         {
-            var attendee = _context.Attendees.SingleOrDefault(a => a.AttendeeId == attendeeId);
+            var attendee = GetAttendee(attendeeId);
             var window = await _ticketQueueService.Enqueue(attendee);
             return Ok(new
             {
@@ -50,17 +54,19 @@ namespace LineCon.Controllers
             });
         }
 
-        [HttpPut]
-        public async Task<IActionResult> Requeue(Guid attendeeId)
+        [HttpPost]
+        public async Task<IActionResult> Enqueue(Guid attendeeId, Guid ticketWindowId)
         {
-            //TODO: jump to back of line
-            throw new NotImplementedException();
+            var attendee = GetAttendee(attendeeId);
+            var ticketWindow = _context.TicketWindows.SingleOrDefault(w => w.TicketWindowId == ticketWindowId);
+            await _ticketQueueService.Enqueue(attendee, ticketWindow); //TODO: do we want to catch the TicketWindowFullException?
+            return Ok();
         }
 
         [HttpPut]
         public async Task<IActionResult> Dequeue(Guid attendeeId)
         {
-            var attendee = _context.Attendees.SingleOrDefault(a => a.AttendeeId == attendeeId);
+            var attendee = GetAttendee(attendeeId);
             await _ticketQueueService.Dequeue(attendee);
             return Ok();
         }
@@ -80,8 +86,17 @@ namespace LineCon.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAvailableWindows()
         {
-            //TODO: request available windows
-            throw new NotImplementedException();
+            var windows = _ticketWindowService.GetAllAvailable().Select(window => new
+            {
+                window.StartTime,
+                window.Length
+            });
+            return Ok(windows);
+        }
+
+        private Attendee GetAttendee(Guid attendeeId)
+        {
+            return _context.Attendees.SingleOrDefault(a => a.AttendeeId == attendeeId);
         }
     }
 }

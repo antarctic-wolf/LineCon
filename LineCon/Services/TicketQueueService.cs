@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using LineCon.Data.Exceptions;
 using LineCon.Models;
 
 namespace LineCon.Services
@@ -23,15 +24,24 @@ namespace LineCon.Services
         /// <returns></returns>
         public async Task<TicketWindow> Enqueue(Attendee attendee, TicketWindow ticketWindow = null)
         {
-            //TODO: handle given ticketWindow
-            //TODO: handle case where attendee is already queued
-
-            ticketWindow = _ticketWindowService.GetNextAvailable();
+            //get the ticket for this attendee if one isn't specified
             if (ticketWindow == null)
             {
-                ticketWindow = await _ticketWindowService.Create();
+                ticketWindow = await _ticketWindowService.GetNextAvailable();
             }
 
+            //ensure the ticket isn't full
+            if (!ticketWindow.Available)
+            {
+                //we should never get here if the ticket came from _ticketWindowService
+                //but it doesn't hurt to check, and this order makes things a bit more readable
+                throw new TicketWindowFullException(ticketWindow);
+            }
+
+            //if we get here, it's safe to dequeue the attendee in case they're already in line
+            await Dequeue(attendee);
+
+            //assign their spot
             var attendeeTicket = new AttendeeTicket()
             {
                 AttendeeTicketId = Guid.NewGuid(),
@@ -39,11 +49,9 @@ namespace LineCon.Services
                 TicketWindow = ticketWindow
             };
             _context.AttendeeTickets.Add(attendeeTicket);
-
             ticketWindow.AttendeeTickets.Add(attendeeTicket);
 
             await _context.SaveChangesAsync();
-
             return ticketWindow;
         }
 
@@ -54,8 +62,12 @@ namespace LineCon.Services
         /// <returns></returns>
         public async Task Dequeue(Attendee attendee)
         {
-            var attendeeTicket = _context.AttendeeTickets.SingleOrDefault(t => t.Attendee.AttendeeId == attendee.AttendeeId);
-            attendeeTicket.Completed = true;
+            //it's ok if they were never in line to begin with, this will just do nothing
+            var attendeeTickets = _context.AttendeeTickets.Where(t => t.Attendee.AttendeeId == attendee.AttendeeId);
+            foreach (var ticket in attendeeTickets)
+            {
+                ticket.Completed = true;
+            }
 
             await _context.SaveChangesAsync();
         }
