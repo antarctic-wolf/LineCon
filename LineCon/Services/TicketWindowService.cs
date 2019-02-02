@@ -22,7 +22,7 @@ namespace LineCon.Services
         public IEnumerable<TicketWindow> GetAllAvailable()
         {
             return _context.TicketWindows.Where(t => t.Available
-                && t.StartTime > DateTime.Now); //TODO should this go by end time instead?
+                && t.StartTime > DateTime.Now);
         }
 
         /// <summary>
@@ -47,7 +47,32 @@ namespace LineCon.Services
         /// <returns></returns>
         public async Task<TicketWindow> Create(ConConfig conConfig)
         {
-            throw new NotImplementedException(); //TODO
+            var lastWindow = _context.TicketWindows
+                .Where(w => w.ConventionId == conConfig.ConventionId)
+                .OrderBy(w => w.StartTime)
+                .LastOrDefault();
+
+            var newStartTime = lastWindow.StartTime.Add(conConfig.TicketWindowInterval);
+            while (newStartTime < conConfig.RegistrationHours.Max(x => x.EndTime)
+                && !conConfig.RegistrationHours.Any(h => h.StartTime <= newStartTime 
+                    && h.EndTime >= newStartTime.Add(conConfig.TicketWindowInterval)))
+            {
+                newStartTime = newStartTime.Add(conConfig.TicketWindowInterval);
+            }
+            if (newStartTime < conConfig.RegistrationHours.Max(x => x.EndTime))
+            {
+                throw new OperationCanceledException("Unable to create new TicketWindow: no remaining time slots");
+            }
+
+            var newWindow = new TicketWindow()
+            {
+                TicketWindowId = Guid.NewGuid(),
+                ConventionId = conConfig.ConventionId,
+                StartTime = newStartTime,
+                Length = conConfig.TicketWindowInterval,
+                AttendeeTickets = new List<AttendeeTicket>(),
+                AttendeeCapacity = conConfig.TicketWindowCapacity
+            };
         }
     }
 }
