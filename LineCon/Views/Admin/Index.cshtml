@@ -1,0 +1,49 @@
+﻿@model  LineCon.Models.ViewModels.Admin.ConConfigViewModel
+@{
+    ViewData["Title"] = "Admin Console - LineCon";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <h1>LineCon Admin Console</h1>
+        <hr />
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-9">
+        <h2>Convention configuration</h2>
+        @using (Html.BeginForm("Index", "Admin", FormMethod.Post))
+        {
+            @Html.HiddenFor(m => m.ConConfigId)
+            @Html.HiddenFor(m => m.ConventionId)
+        
+            <div class="row">
+                <div class="col-md-3 form-group">
+                    @Html.DisplayNameFor(m => m.TicketWindowInterval)
+                    @Html.EditorFor(m => m.TicketWindowInterval)
+                    <p>length of a ticket window in minutes</p>
+                </div>
+                <div class="col-md-3 form-group">
+                    @Html.DisplayNameFor(m => m.TicketWindowCapacity)
+                    @Html.EditorFor(m => m.TicketWindowCapacity)
+                    <p>maximum number of attendees that can register in one ticket window</p>
+                </div>
+                <div class="col-md-3 form-group">
+                    @Html.DisplayNameFor(m => m.RequireConfirmationNumber)
+                    @Html.CheckBoxFor(m => m.RequireConfirmationNumber)
+                    <p>whether or not attendees must enter their valid confirmation number to register in the app</p>
+                </div>
+            </div>
+
+            <div class="row">
+                @Html.DisplayNameFor(m => m.RegistrationHours)
+                @foreach (var hours in Model.RegistrationHours)
+                {
+                    <input type="datetime" value="@hours.Item1" />
+                    <input type="datetime" value="@hours.Item2" />
+                }
+            </div>
+        }
+    </div>
+</div>
