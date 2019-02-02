@@ -73,6 +73,10 @@ namespace LineCon.Services
                 AttendeeTickets = new List<AttendeeTicket>(),
                 AttendeeCapacity = conConfig.TicketWindowCapacity
             };
+
+            _context.TicketWindows.Add(newWindow);
+            await _context.SaveChangesAsync();
+            return newWindow;
         }
     }
 }
