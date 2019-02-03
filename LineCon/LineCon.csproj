@@ -11,6 +11,8 @@
     <Compile Remove="Migrations\20181203003226_TicketWindow_dbset.Designer.cs" />
     <Compile Remove="Migrations\20190131042155_AddConventionAndConConfig.cs" />
     <Compile Remove="Migrations\20190131042155_AddConventionAndConConfig.Designer.cs" />
+    <Compile Remove="Migrations\20190203035616_test.cs" />
+    <Compile Remove="Migrations\20190203035616_test.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

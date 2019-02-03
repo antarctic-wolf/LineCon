@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,6 +35,8 @@ namespace LineCon
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            services.AddOptions();
+            services.Configure<AppSettings>(Configuration);
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
@@ -62,11 +65,19 @@ namespace LineCon
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
+            //app.UseConIdentifierMiddleware();
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
-                    name: "default",
+                    name: "home",
                     template: "{controller=Home}/{action=Index}/{id?}");
+
+                routes.MapRoute(
+                    name: "app",
+                    template: "{conIdentifier}/{controller}/{action}/{id?}",
+                    defaults: new { controller = "App", action = "Index" },
+                    constraints: new { conIdentifier = new ConIdentifierConstraint() });
             });
         }
     }
