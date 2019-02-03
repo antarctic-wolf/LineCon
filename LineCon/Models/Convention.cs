@@ -14,6 +14,8 @@ namespace LineCon.Models
         public Guid ConConfigId { get; set; }
         public virtual ConConfig ConConfig { get; set; }
 
+        public string UrlIdentifier { get; set; }
+
         public List<ConfirmationNumber> ConfirmationNumbers { get; set; }
 
         public List<Attendee> Attendees { get; set; }
