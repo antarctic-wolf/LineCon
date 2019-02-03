@@ -10,7 +10,7 @@ namespace LineCon.Models.ViewModels.Admin
         public Guid ConventionId { get; set; }
 
         [Display(Name = "Registration Hours of Operation")]
-        public List<Tuple<DateTime, DateTime>> RegistrationHours { get; set; }
+        public List<RegistrationHours> RegistrationHours { get; set; }
 
         [Display(Name = "Ticket Window Interval")]
         public int TicketWindowInterval { get; set; }

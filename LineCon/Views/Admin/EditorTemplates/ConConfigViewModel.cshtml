@@ -1,0 +1,22 @@
+﻿@model LineCon.Models.ViewModels.Admin.ConConfigViewModel
+
+@Html.HiddenFor(m => m.ConConfigId)
+@Html.HiddenFor(m => m.ConventionId)
+
+<div class="row">
+    <div class="col-md-3 form-group">
+        @Html.LabelFor(m => m.TicketWindowInterval)
+        @Html.EditorFor(m => m.TicketWindowInterval, new { htmlAttributes = new { @class = "form-control" } })
+        <p>length of a ticket window in minutes</p>
+    </div>
+    <div class="col-md-3 form-group">
+        @Html.LabelFor(m => m.TicketWindowCapacity)
+        @Html.EditorFor(m => m.TicketWindowCapacity, new { htmlAttributes = new { @class = "form-control" } })
+        <p>maximum number of attendees that can register in one ticket window</p>
+    </div>
+    <div class="col-md-3 form-group">
+        @Html.LabelFor(m => m.RequireConfirmationNumber)
+        @Html.CheckBoxFor(m => m.RequireConfirmationNumber, new { htmlAttributes = new { @class = "form-control" } })
+        <p>whether or not attendees must enter their valid confirmation number to register in the app</p>
+    </div>
+</div>

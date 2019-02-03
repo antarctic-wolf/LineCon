@@ -1,0 +1,6 @@
+﻿@model LineCon.Models.ViewModels.Admin.AdminConsoleViewModel
+@{
+    Layout = null;
+}
+
+@Html.EditorForMany(m => m.ConConfig.RegistrationHours, x => x.RegistrationHoursId.ToString())

@@ -1,4 +1,5 @@
-﻿using LineCon.Models.ViewModels.Admin;
+using LineCon.Models;
+using LineCon.Models.ViewModels.Admin;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -10,19 +11,50 @@ namespace LineCon.Controllers
 {
     public class AdminController : Controller
     {
+        [HttpGet]
         public IActionResult Index()
         {
-            return View(new ConConfigViewModel()
+            return View(new AdminConsoleViewModel()
             {
-                ConConfigId = Guid.Empty,
-                ConventionId = Guid.Empty,
-                RegistrationHours = new List<Tuple<DateTime, DateTime>>()
+                ConConfig = new ConConfigViewModel()
                 {
-                    new Tuple<DateTime, DateTime>(DateTime.Now, DateTime.Now.AddHours(8))
-                },
-                TicketWindowInterval = 5,
-                TicketWindowCapacity = 5,
-                RequireConfirmationNumber = true
+                    ConConfigId = Guid.Empty,
+                    ConventionId = Guid.Empty,
+                    RegistrationHours = new List<RegistrationHours>()
+                    {
+                        new RegistrationHours()
+                        {
+                            RegistrationHoursId = Guid.NewGuid()
+                        }
+                    },
+                    TicketWindowInterval = 5,
+                    TicketWindowCapacity = 5,
+                    RequireConfirmationNumber = true
+                }
+            });
+        }
+
+        [HttpPost]
+        public IActionResult Index([Bind] AdminConsoleViewModel model)
+        {
+            return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult AddHours()
+        {
+            return View(new AdminConsoleViewModel()
+            {
+                ConConfig = new ConConfigViewModel()
+                {
+                    RegistrationHours = new List<RegistrationHours>()
+                    {
+                        new RegistrationHours()
+                        {
+                            RegistrationHoursId = Guid.NewGuid()
+                        }
+                    }
+                }
             });
         }
     }

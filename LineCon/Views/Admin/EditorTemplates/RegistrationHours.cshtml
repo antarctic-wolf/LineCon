@@ -1,0 +1,16 @@
+﻿@model LineCon.Models.RegistrationHours
+
+@Html.HiddenFor(m => m.RegistrationHoursId)
+@Html.HiddenFor(m => m.ConConfigId)
+
+<div class="row form-group">
+    <div class="col-md-3">
+        @Html.EditorFor(m => m.StartTime, new { htmlAttributes = new { @class = "form-control" } })
+    </div>
+    <div class="col-md-3">
+        @Html.EditorFor(m => m.EndTime, new { htmlAttributes = new { @class = "form-control" } })
+    </div>
+    <div class="col-md-3">
+        <button><span class="glyphicon glyphicon-minus" /></button>
+    </div>
+</div>
