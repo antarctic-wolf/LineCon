@@ -3,6 +3,7 @@ using LineCon.Data.Exceptions;
 using LineCon.Models;
 using LineCon.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -29,35 +30,9 @@ namespace LineCon.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register(NewAttendee attendee)
-        {
-            var convention = _context.Conventions.SingleOrDefault(c => c.ConventionId == attendee.ConventionId);
-            if (convention == null)
-            {
-                return StatusCode(500, $"No convention found with this id: {attendee.ConventionId}");
-            }
-
-            if (convention.ConConfig.RequireConfirmationNumber
-                && !convention.ConfirmationNumbers.Any(n => n.Number == attendee.ConfirmationNumber))
-            {
-                return Forbid($"No registration found with this confirmation number: {attendee.ConfirmationNumber}");
-            }
-
-            try
-            {
-                await _registrationService.Register(attendee);
-                return Ok();
-            }
-            catch(AttendeeExistsException e)
-            {
-                return Conflict(e.Message);
-            }
-        }
-
-        [HttpPost]
         public async Task<IActionResult> Enqueue(Guid attendeeId)
         {
-            var (attendee, conConfig) = GetAttendee(attendeeId);
+            var (attendee, conConfig) = await GetAttendee(attendeeId);
             var window = await _ticketQueueService.Enqueue(conConfig, attendee);
             return Ok(new
             {
@@ -69,8 +44,8 @@ namespace LineCon.Controllers
         [HttpPost]
         public async Task<IActionResult> Enqueue(Guid attendeeId, Guid ticketWindowId)
         {
-            var (attendee, conConfig) = GetAttendee(attendeeId);
-            var ticketWindow = _context.TicketWindows.SingleOrDefault(w => w.TicketWindowId == ticketWindowId);
+            var (attendee, conConfig) = await GetAttendee(attendeeId);
+            var ticketWindow = await _context.TicketWindows.SingleOrDefaultAsync(w => w.TicketWindowId == ticketWindowId);
             try
             {
                 await _ticketQueueService.Enqueue(conConfig, attendee, ticketWindow);
@@ -85,7 +60,7 @@ namespace LineCon.Controllers
         [HttpPut]
         public async Task<IActionResult> Dequeue(Guid attendeeId)
         {
-            var (attendee, conConfig) = GetAttendee(attendeeId);
+            var (attendee, conConfig) = await GetAttendee(attendeeId);
             await _ticketQueueService.Dequeue(attendee);
             return Ok();
         }
@@ -93,7 +68,7 @@ namespace LineCon.Controllers
         [HttpGet]
         public async Task<IActionResult> GetWindow(Guid attendeeId)
         {
-            var ticket = _context.AttendeeTickets.SingleOrDefault(t => t.AttendeeId == attendeeId);
+            var ticket =await _context.AttendeeTickets.SingleOrDefaultAsync(t => t.AttendeeId == attendeeId);
             var window = ticket.TicketWindow;
             return Ok(new
             {
@@ -113,10 +88,10 @@ namespace LineCon.Controllers
             return Ok(windows);
         }
 
-        private (Attendee, ConConfig) GetAttendee(Guid attendeeId)
+        private async Task<(Attendee, ConConfig)> GetAttendee(Guid attendeeId)
         {
-            var attendee = _context.Attendees.SingleOrDefault(a => a.AttendeeId == attendeeId);
-            var conConfig = _context.Conventions.SingleOrDefault(c => c.ConConfigId == attendee.ConventionId).ConConfig;
+            var attendee = await _context.Attendees.SingleOrDefaultAsync(a => a.AttendeeId == attendeeId);
+            var conConfig = (await _context.Conventions.SingleOrDefaultAsync(c => c.ConConfigId == attendee.ConventionId)).ConConfig;
             return (attendee, conConfig);
         }
     }

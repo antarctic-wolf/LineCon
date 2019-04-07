@@ -12,7 +12,7 @@ namespace LineCon.Controllers
     public class AdminController : Controller
     {
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult Index(string conIdentifier)
         {
             return View(new AdminConsoleViewModel()
             {
@@ -37,6 +37,7 @@ namespace LineCon.Controllers
         [HttpPost]
         public IActionResult Index([Bind] AdminConsoleViewModel model)
         {
+            //TODO
             return View(model);
         }
 

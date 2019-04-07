@@ -23,7 +23,8 @@ namespace LineCon.Services
         /// <returns></returns>
         public async Task Register(NewAttendee newAttendee)
         {
-            if (_context.Attendees.Any(a => a.ConfirmationNumber == newAttendee.ConfirmationNumber))
+            var conConfig = _context.ConConfigs.SingleOrDefault(cc => cc.ConventionId == newAttendee.ConventionId);
+            if (conConfig.RequireConfirmationNumber && _context.Attendees.Any(a => a.ConfirmationNumber == newAttendee.ConfirmationNumber))
             {
                 throw new AttendeeExistsException(newAttendee.ConfirmationNumber);
             }

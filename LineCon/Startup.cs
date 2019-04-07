@@ -71,7 +71,7 @@ namespace LineCon
             {
                 routes.MapRoute(
                     name: "home",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller=Home}/{action=Index}");
 
                 routes.MapRoute(
                     name: "app",
