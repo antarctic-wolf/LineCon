@@ -41,7 +41,7 @@ namespace LineCon
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AddScoped<IRegistrationService, RegistrationService>();
-            services.AddScoped<ITicketQueueService, TicketQueueService>();
+            services.AddScoped<ITicketWindowService, TicketWindowService>();
             services.AddScoped<ITicketQueueService, TicketQueueService>();
 
             var connectionString = @"Server=localhost\SQLEXPRESS;Database=master;Trusted_Connection=True;";
