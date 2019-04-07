@@ -20,8 +20,14 @@
 
             @if (Model.RequireConfirmationNumber)
             {
-                @Html.EditorFor(m => m.NewAttendee.ConfirmationNumber)
+                <p>Please enter your confirmation number. (required)</p>
             }
+            else
+            {
+                <p>Optional: enter your confirmation number. This will allow you to change your position in line later.</p>
+            }
+
+            @Html.EditorFor(m => m.NewAttendee.ConfirmationNumber)
 
             <p>A select for the ticket window you want will go here.</p>
 

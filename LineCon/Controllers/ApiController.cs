@@ -33,7 +33,7 @@ namespace LineCon.Controllers
         public async Task<IActionResult> Enqueue(Guid attendeeId)
         {
             var (attendee, conConfig) = await GetAttendee(attendeeId);
-            var window = await _ticketQueueService.Enqueue(conConfig, attendee);
+            var window = await _ticketQueueService.Enqueue(attendee);
             return Ok(new
             {
                 window.StartTime,
@@ -48,7 +48,7 @@ namespace LineCon.Controllers
             var ticketWindow = await _context.TicketWindows.SingleOrDefaultAsync(w => w.TicketWindowId == ticketWindowId);
             try
             {
-                await _ticketQueueService.Enqueue(conConfig, attendee, ticketWindow);
+                await _ticketQueueService.Enqueue(attendee, ticketWindow);
                 return Ok();
             }
             catch (TicketWindowFullException e)
@@ -77,16 +77,16 @@ namespace LineCon.Controllers
             });
         }
         
-        [HttpGet]
-        public async Task<IActionResult> GetAvailableWindows()
-        {
-            var windows = _ticketWindowService.GetAllAvailable().Select(window => new
-            {
-                window.StartTime,
-                window.Length
-            });
-            return Ok(windows);
-        }
+        //[HttpGet]
+        //public async Task<IActionResult> GetAvailableWindows()
+        //{
+        //    var windows = _ticketWindowService.GetAllAvailable().Select(window => new
+        //    {
+        //        window.StartTime,
+        //        window.Length
+        //    });
+        //    return Ok(windows);
+        //}
 
         private async Task<(Attendee, ConConfig)> GetAttendee(Guid attendeeId)
         {

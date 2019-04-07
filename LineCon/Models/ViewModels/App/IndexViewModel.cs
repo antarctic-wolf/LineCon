@@ -11,5 +11,7 @@ namespace LineCon.Models.ViewModels.App
     {
         public bool RequireConfirmationNumber { get; set; }
         public NewAttendee NewAttendee { get; set; }
+        public IEnumerable<TicketWindow> AailableWindows { get; set; }
+        public TicketWindow SelectedWindow { get; set; }
     }
 }

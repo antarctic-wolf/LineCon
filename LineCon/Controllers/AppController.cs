@@ -35,7 +35,7 @@ namespace LineCon.Controllers
         /// <summary>
         /// This displays the screen for the kiosk to direct attendees to the registration page
         /// </summary>
-        public IActionResult Kiosk(string conIdentifier)
+        public async Task<IActionResult> Kiosk(string conIdentifier)
         {
             //TODO
             return View();
@@ -49,14 +49,14 @@ namespace LineCon.Controllers
             var con = await _context.Conventions
                 .Include(c => c.ConConfig)
                 .SingleOrDefaultAsync(c => c.UrlIdentifier.ToString() == conIdentifier.ToString());
-            var attendee = new NewAttendee()
-            {
-                ConventionId = con.ConventionId
-            };
             var model = new IndexViewModel()
             {
                 RequireConfirmationNumber = con.ConConfig.RequireConfirmationNumber,
-                NewAttendee = attendee
+                AailableWindows = (await _ticketWindowService.GetAllAvailable(con.ConventionId)).OrderBy(w => w.StartTime),
+                NewAttendee = new NewAttendee()
+                {
+                    ConventionId = con.ConventionId
+                }
             };
             return View(model);
         }
@@ -68,12 +68,13 @@ namespace LineCon.Controllers
         public async Task<IActionResult> Index(string conIdentifier, IndexViewModel model)
         {
             var convention = await _context.Conventions
+                .Include(c => c.ConConfig)
                 .SingleOrDefaultAsync(c => c.ConventionId == model.NewAttendee.ConventionId);
+
             if (convention == null)
             {
                 return StatusCode(500, $"No convention found with this id: {model.NewAttendee.ConventionId}");
             }
-
             if (convention.ConConfig.RequireConfirmationNumber
                 && !convention.ConfirmationNumbers.Any(n => n.Number == model.NewAttendee.ConfirmationNumber))
             {
@@ -82,10 +83,16 @@ namespace LineCon.Controllers
 
             try
             {
-                await _registrationService.Register(model.NewAttendee);
-                return Ok();
+                //register them with LineCon
+                var attendee = await _registrationService.Register(model.NewAttendee);
+
+                //put them in line
+                //if they didn't select a window, it'll pass null which is ok. It'll then select the next available
+                var window = await _ticketQueueService.Enqueue(attendee, model.SelectedWindow);
+
+                return Ok(); //TODO inform them of their time
             }
-            catch (AttendeeExistsException e)
+            catch (Exception e)
             {
                 return Conflict(e.Message);
             }

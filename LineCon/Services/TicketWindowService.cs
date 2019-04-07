@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LineCon.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace LineCon.Services
 {
@@ -18,25 +19,30 @@ namespace LineCon.Services
         /// <summary>
         /// Gets all available TicketWindows
         /// </summary>
+        /// <param name="conventionId"></param>
         /// <returns></returns>
-        public IEnumerable<TicketWindow> GetAllAvailable()
+        public async Task<IEnumerable<TicketWindow>> GetAllAvailable(Guid conventionId)
         {
-            return _context.TicketWindows.Where(t => t.Available
-                && t.StartTime > DateTime.Now);
+            return await _context.TicketWindows
+                .Where(t => t.ConventionId == conventionId
+                    && t.Available
+                    && t.StartTime >= DateTime.Now)
+                .ToListAsync();
         }
 
         /// <summary>
         /// Gets the next available TicketWindow
         /// </summary>
+        /// <param name="conventionId"></param>
         /// <returns></returns>
-        public async Task<TicketWindow> GetNextAvailable(ConConfig conConfig)
+        public async Task<TicketWindow> GetNextAvailable(Guid conventionId)
         {
-            var window = GetAllAvailable()
+            var window = (await GetAllAvailable(conventionId))
                 .OrderBy(t => t.StartTime)
                 .FirstOrDefault();
             if (window == null)
             {
-                window = await Create(conConfig);
+                window = await Create(conventionId);
             }
             return window;
         }
@@ -44,13 +50,18 @@ namespace LineCon.Services
         /// <summary>
         /// Creates a new TicketWindow
         /// </summary>
+        /// <param name="conventionId"></param>
         /// <returns></returns>
-        public async Task<TicketWindow> Create(ConConfig conConfig)
+        public async Task<TicketWindow> Create(Guid conventionId)
         {
-            var lastWindow = _context.TicketWindows
-                .Where(w => w.ConventionId == conConfig.ConventionId)
+            var conConfig = await _context.ConConfigs
+                .Include(c => c.RegistrationHours)
+                .SingleOrDefaultAsync(c => c.ConventionId == conventionId);
+
+            var lastWindow = await _context.TicketWindows
+                .Where(w => w.ConventionId == conventionId)
                 .OrderBy(w => w.StartTime)
-                .LastOrDefault();
+                .LastOrDefaultAsync();
 
             var newStartTime = lastWindow.StartTime.Add(conConfig.TicketWindowInterval);
             while (newStartTime < conConfig.RegistrationHours.Max(x => x.EndTime)
@@ -67,7 +78,7 @@ namespace LineCon.Services
             var newWindow = new TicketWindow()
             {
                 TicketWindowId = Guid.NewGuid(),
-                ConventionId = conConfig.ConventionId,
+                ConventionId = conventionId,
                 StartTime = newStartTime,
                 Length = conConfig.TicketWindowInterval,
                 AttendeeTickets = new List<AttendeeTicket>(),

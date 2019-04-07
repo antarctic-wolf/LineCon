@@ -1,6 +1,7 @@
 ﻿using LineCon.Data;
 using LineCon.Data.Exceptions;
 using LineCon.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,21 +22,23 @@ namespace LineCon.Services
         /// </summary>
         /// <param name="newAttendee"></param>
         /// <returns></returns>
-        public async Task Register(NewAttendee newAttendee)
+        public async Task<Attendee> Register(NewAttendee newAttendee)
         {
-            var conConfig = _context.ConConfigs.SingleOrDefault(cc => cc.ConventionId == newAttendee.ConventionId);
-            if (conConfig.RequireConfirmationNumber && _context.Attendees.Any(a => a.ConfirmationNumber == newAttendee.ConfirmationNumber))
+            var conConfig = await _context.ConConfigs.SingleOrDefaultAsync(cc => cc.ConventionId == newAttendee.ConventionId);
+            if (await _context.Attendees.AnyAsync(a => a.ConfirmationNumber == newAttendee.ConfirmationNumber))
             {
                 throw new AttendeeExistsException(newAttendee.ConfirmationNumber);
             }
 
-            _context.Attendees.Add(new Attendee()
+            var attendee = new Attendee()
             {
                 AttendeeId = Guid.NewGuid(),
                 ConfirmationNumber = newAttendee.ConfirmationNumber,
                 BadgeName = newAttendee.BadgeName
-            });
+            };
+            _context.Attendees.Add(attendee);
             await _context.SaveChangesAsync();
+            return attendee;
         }
     }
 }

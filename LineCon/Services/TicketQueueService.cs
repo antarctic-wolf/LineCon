@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using LineCon.Data.Exceptions;
 using LineCon.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace LineCon.Services
 {
@@ -21,13 +22,14 @@ namespace LineCon.Services
         /// Adds an Attendee to the ticket queue in the next available window
         /// </summary>
         /// <param name="attendee"></param>
+        /// <param name="ticketWindow">Overrides next available, places the attendee in this specific window</param>
         /// <returns></returns>
-        public async Task<TicketWindow> Enqueue(ConConfig conConfig, Attendee attendee, TicketWindow ticketWindow = null)
+        public async Task<TicketWindow> Enqueue(Attendee attendee, TicketWindow ticketWindow = null)
         {
             //get the ticket for this attendee if one isn't specified
             if (ticketWindow == null)
             {
-                ticketWindow = await _ticketWindowService.GetNextAvailable(conConfig);
+                ticketWindow = await _ticketWindowService.GetNextAvailable(attendee.ConventionId);
             }
 
             //ensure the ticket isn't full
@@ -63,7 +65,9 @@ namespace LineCon.Services
         public async Task Dequeue(Attendee attendee)
         {
             //it's ok if they were never in line to begin with, this will just do nothing
-            var attendeeTickets = _context.AttendeeTickets.Where(t => t.Attendee.AttendeeId == attendee.AttendeeId);
+            var attendeeTickets = await _context.AttendeeTickets
+                .Where(t => t.Attendee.AttendeeId == attendee.AttendeeId)
+                .ToListAsync();
             foreach (var ticket in attendeeTickets)
             {
                 ticket.Completed = true;
