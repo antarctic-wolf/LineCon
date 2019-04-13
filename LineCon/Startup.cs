@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Internal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
@@ -65,7 +66,8 @@ namespace LineCon
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
-            //app.UseConIdentifierMiddleware();
+            app.UseEndpointRouting();
+            app.UseConIdentifierMiddleware();
 
             app.UseMvc(routes =>
             {
