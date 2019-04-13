@@ -65,14 +65,12 @@ namespace LineCon
         //checks that the conIdentifier matches a convention in the database
         public bool Match(HttpContext httpContext, IRouter route, string routeKey, RouteValueDictionary values, RouteDirection routeDirection)
         {
-            //var conIdentifier = values["conIdentifier"] as string;
-            //using (var context = httpContext.RequestServices.GetService<LineConContext>())
-            //{
-            //    //TODO: turn this on
-            //    //return context.Conventions.Any(c => c.UrlIdentifier == conIdentifier);
-            //    return true;
-            //}
-            return true; //TODO
+            var conIdentifier = values["conIdentifier"] as string;
+            using (var scope = httpContext.RequestServices.CreateScope())
+            {
+                return scope.ServiceProvider.GetRequiredService<LineConContext>()
+                    .Conventions.Any(c => c.UrlIdentifier.ToLower() == conIdentifier.ToLower());
+            }
         }
     }
 }
