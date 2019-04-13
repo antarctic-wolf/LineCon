@@ -20,6 +20,6 @@ namespace LineCon.Models
         public List<AttendeeTicket> AttendeeTickets { get; set; }
         public int AttendeeCapacity { get; set; } //TODO: redundant from ConConfig
 
-        public bool Available => AttendeeTickets.Count(t => !t.Completed) < AttendeeCapacity;
+        public bool Available => (AttendeeTickets?.Count(t => !t.Completed) ?? 0) < AttendeeCapacity;
     }
 }

@@ -31,6 +31,7 @@ namespace LineCon.Services
         public async Task<IEnumerable<TicketWindow>> GetAllAvailable(Guid conventionId)
         {
             return await _context.TicketWindows
+                .Include(w => w.AttendeeTickets)
                 .Where(t => t.ConventionId == conventionId
                     && t.Available
                     && t.StartTime >= DateTime.Now)
@@ -68,6 +69,7 @@ namespace LineCon.Services
                 .ConConfig;
 
             var lastWindow = await _context.TicketWindows
+                .Include(w => w.AttendeeTickets)
                 .Where(w => w.ConventionId == conventionId)
                 .OrderBy(w => w.StartTime)
                 .LastOrDefaultAsync();
