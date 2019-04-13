@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LineCon.Models
 {
@@ -10,11 +9,7 @@ namespace LineCon.Models
         [Key]
         public Guid ConConfigId { get; set; }
 
-        [ForeignKey("Convention")]
-        public Guid ConventionId { get; set; }
-        public virtual Convention Convention { get; set; }
-
-        public List<RegistrationHours> RegistrationHours { get; set; }
+        public IList<RegistrationHours> RegistrationHours { get; set; }
 
         public TimeSpan TicketWindowInterval { get; set; }
 

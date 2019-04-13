@@ -10,18 +10,17 @@ namespace LineCon.Models
         [Key]
         public Guid ConventionId { get; set; }
 
-        [ForeignKey("ConConfig")]
         public Guid ConConfigId { get; set; }
         public virtual ConConfig ConConfig { get; set; }
 
         public string UrlIdentifier { get; set; }
 
-        public List<ConfirmationNumber> ConfirmationNumbers { get; set; }
+        public ICollection<ConfirmationNumber> ConfirmationNumbers { get; set; }
 
-        public List<Attendee> Attendees { get; set; }
+        public ICollection<Attendee> Attendees { get; set; }
 
-        public List<TicketWindow> TicketWindows { get; set; }
+        public IList<TicketWindow> TicketWindows { get; set; }
 
-        public List<AttendeeTicket> AttendeeTickets { get; set; }
+        public ICollection<AttendeeTicket> AttendeeTickets { get; set; } //TODO: redundant with this.TicketWindows.AttendeeTickets
     }
 }

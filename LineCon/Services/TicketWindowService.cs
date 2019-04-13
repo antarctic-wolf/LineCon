@@ -54,9 +54,11 @@ namespace LineCon.Services
         /// <returns></returns>
         public async Task<TicketWindow> Create(Guid conventionId)
         {
-            var conConfig = await _context.ConConfigs
-                .Include(c => c.RegistrationHours)
-                .SingleOrDefaultAsync(c => c.ConventionId == conventionId);
+            var conConfig = (await _context.Conventions
+                .Include(c => c.ConConfig)
+                    .ThenInclude(cc => cc.RegistrationHours)
+                .SingleOrDefaultAsync(c => c.ConventionId == conventionId))
+                .ConConfig;
 
             var lastWindow = await _context.TicketWindows
                 .Where(w => w.ConventionId == conventionId)

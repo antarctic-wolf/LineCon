@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LineCon.Models
 {
@@ -9,7 +8,6 @@ namespace LineCon.Models
         [Key]
         public Guid AttendeeId { get; set; }
 
-        [ForeignKey("Convention")]
         public Guid ConventionId { get; set; }
         public virtual Convention Convention { get; set; }
 

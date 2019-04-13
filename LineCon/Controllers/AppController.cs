@@ -37,6 +37,9 @@ namespace LineCon.Controllers
         /// </summary>
         public async Task<IActionResult> Kiosk(string conIdentifier)
         {
+            var convention = await _context.Conventions.SingleOrDefaultAsync(c => c.UrlIdentifier.ToLower() == conIdentifier.ToLower());
+            if (convention == null) return StatusCode(404, $"No convention found with this id: {conIdentifier}");
+
             //TODO
             return View();
         }
@@ -46,16 +49,18 @@ namespace LineCon.Controllers
         /// </summary>
         public async Task<IActionResult> Index(string conIdentifier)
         {
-            var con = await _context.Conventions
+            var convention = await _context.Conventions
                 .Include(c => c.ConConfig)
-                .SingleOrDefaultAsync(c => c.UrlIdentifier.ToString() == conIdentifier.ToString());
+                .SingleOrDefaultAsync(c => c.UrlIdentifier.ToLower() == conIdentifier.ToLower());
+            if (convention == null) return StatusCode(404, $"No convention found with this id: {conIdentifier}");
+
             var model = new IndexViewModel()
             {
-                RequireConfirmationNumber = con.ConConfig.RequireConfirmationNumber,
-                AailableWindows = (await _ticketWindowService.GetAllAvailable(con.ConventionId)).OrderBy(w => w.StartTime),
+                RequireConfirmationNumber = convention.ConConfig.RequireConfirmationNumber,
+                AailableWindows = (await _ticketWindowService.GetAllAvailable(convention.ConventionId)).OrderBy(w => w.StartTime),
                 NewAttendee = new NewAttendee()
                 {
-                    ConventionId = con.ConventionId
+                    ConventionId = convention.ConventionId
                 }
             };
             return View(model);

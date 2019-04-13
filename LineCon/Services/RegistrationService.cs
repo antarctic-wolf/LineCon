@@ -24,7 +24,11 @@ namespace LineCon.Services
         /// <returns></returns>
         public async Task<Attendee> Register(NewAttendee newAttendee)
         {
-            var conConfig = await _context.ConConfigs.SingleOrDefaultAsync(cc => cc.ConventionId == newAttendee.ConventionId);
+            var conConfig = (await _context.Conventions
+                .Include(c => c.ConConfig)
+                    .ThenInclude(cc => cc.RegistrationHours)
+                .SingleOrDefaultAsync(c => c.ConventionId == newAttendee.ConventionId))
+                .ConConfig;
             if (await _context.Attendees.AnyAsync(a => a.ConfirmationNumber == newAttendee.ConfirmationNumber))
             {
                 throw new AttendeeExistsException(newAttendee.ConfirmationNumber);

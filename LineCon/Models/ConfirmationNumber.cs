@@ -9,7 +9,6 @@ namespace LineCon.Models
         [Key]
         public Guid ConConfigId { get; set; }
 
-        [ForeignKey("Convention")]
         public Guid ConventionId { get; set; }
         public virtual Convention Convention { get; set; }
 

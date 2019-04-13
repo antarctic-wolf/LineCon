@@ -9,7 +9,6 @@ namespace LineCon.Models
         [Key]
         public Guid RegistrationHoursId { get; set; }
 
-        [ForeignKey("ConConfig")]
         public Guid ConConfigId { get; set; }
         public virtual ConConfig ConConfig { get; set; }
 
