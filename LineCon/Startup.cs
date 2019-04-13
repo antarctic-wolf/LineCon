@@ -38,7 +38,7 @@ namespace LineCon
             services.AddOptions();
             services.Configure<AppSettings>(Configuration);
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services.AddScoped<IRegistrationService, RegistrationService>();
             services.AddScoped<ITicketWindowService, TicketWindowService>();
