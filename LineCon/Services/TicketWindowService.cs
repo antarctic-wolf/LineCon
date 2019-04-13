@@ -7,6 +7,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LineCon.Services
 {
+    public interface ITicketWindowService
+    {
+        Task<IEnumerable<TicketWindow>> GetAllAvailable(Guid conventionId);
+        Task<TicketWindow> GetNextAvailable(Guid conventionId);
+        Task<TicketWindow> Create(Guid conventionId);
+    }
+
     public class TicketWindowService : ITicketWindowService
     {
         private readonly LineConContext _context;

@@ -8,6 +8,11 @@ using System.Threading.Tasks;
 
 namespace LineCon.Services
 {
+    public interface IRegistrationService
+    {
+        Task<Attendee> Register(NewAttendee attendee);
+    }
+
     public class RegistrationService : IRegistrationService
     {
         private readonly LineConContext _context;
