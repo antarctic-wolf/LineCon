@@ -35,10 +35,9 @@ namespace LineCon.Controllers
         /// <summary>
         /// This displays the screen for the kiosk to direct attendees to the registration page
         /// </summary>
-        public async Task<IActionResult> Kiosk(string conIdentifier)
+        public async Task<IActionResult> Kiosk()
         {
-            var convention = await _context.Conventions.SingleOrDefaultAsync(c => c.UrlIdentifier.ToLower() == conIdentifier.ToLower());
-            if (convention == null) return StatusCode(404, $"No convention found with this id: {conIdentifier}");
+            var convention = HttpContext.Items["convention"] as Convention;
 
             //TODO
             return View();
@@ -47,12 +46,9 @@ namespace LineCon.Controllers
         /// <summary>
         /// This is the registration page for the attendees
         /// </summary>
-        public async Task<IActionResult> Index(string conIdentifier)
+        public async Task<IActionResult> Index()
         {
-            var convention = await _context.Conventions
-                .Include(c => c.ConConfig)
-                .SingleOrDefaultAsync(c => c.UrlIdentifier.ToLower() == conIdentifier.ToLower());
-            if (convention == null) return StatusCode(404, $"No convention found with this id: {conIdentifier}");
+            var convention = HttpContext.Items["convention"] as Convention;
 
             var model = new IndexViewModel()
             {
@@ -70,16 +66,10 @@ namespace LineCon.Controllers
         /// This handles the attendee registration
         /// </summary>
         [HttpPost]
-        public async Task<IActionResult> Index(string conIdentifier, IndexViewModel model)
+        public async Task<IActionResult> Index(IndexViewModel model)
         {
-            var convention = await _context.Conventions
-                .Include(c => c.ConConfig)
-                .SingleOrDefaultAsync(c => c.ConventionId == model.NewAttendee.ConventionId);
+            var convention = HttpContext.Items["convention"] as Convention;
 
-            if (convention == null)
-            {
-                return StatusCode(500, $"No convention found with this id: {model.NewAttendee.ConventionId}");
-            }
             if (convention.ConConfig.RequireConfirmationNumber
                 && !convention.ConfirmationNumbers.Any(n => n.Number == model.NewAttendee.ConfirmationNumber))
             {
