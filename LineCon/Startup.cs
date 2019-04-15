@@ -78,8 +78,7 @@ namespace LineCon
                 routes.MapRoute(
                     name: "app",
                     template: "{conIdentifier}/{controller}/{action}/{id?}",
-                    defaults: new { controller = "App", action = "Index" },
-                    constraints: new { conIdentifier = new ConIdentifierConstraint() });
+                    defaults: new { controller = "App", action = "Index" });
             });
         }
     }
